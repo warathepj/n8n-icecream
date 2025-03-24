@@ -8,6 +8,7 @@ const brokerUrl = 'mqtt://test.mosquitto.org';
 const topic = 'corgidev/room/temperature';
 const webhookUrl = 'your-webhook-url';
 
+
 // Connect to the MQTT broker
 const client = mqtt.connect(brokerUrl);
 

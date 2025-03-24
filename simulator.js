@@ -6,12 +6,11 @@ const brokerUrl = 'mqtt://test.mosquitto.org';
 const topic = 'corgidev/room/temperature';
 const client = mqtt.connect(brokerUrl);
 
-// Generate a random number between 27 and 30 (inclusive)
+// Generate a random number between -20.0 and -8.0 (inclusive)
 function generateRandomTemperature() {
     // Math.random() generates a number between 0 (inclusive) and 1 (exclusive)
-    // Multiply by the range (3) and add the minimum value (27)
-    // Use Math.random() * (max - min + 1) + min for inclusive range
-    return Math.random() * (30 - 27) + 27;
+    // Multiply by the range (12) and add the minimum value (-20)
+    return Math.random() * (-8 - (-20)) + (-20);
 }
 
 // Function to generate and display a random temperature

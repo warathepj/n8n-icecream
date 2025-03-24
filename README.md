@@ -1,46 +1,42 @@
-# Room Temperature Monitor
+# Ice Cream Storage Temperature Monitor
 
-A Node.js application that monitors room temperature data using MQTT and automatically logs it to Google Sheets via n8n automation.
+A Node.js application that monitors freezer temperature and sends alerts via Telegram when temperature rises above safe levels for ice cream storage (-12°C).
 
-## Overview
+## System Overview
 
-This project consists of two main components:
+This system consists of:
 
-1. A temperature simulator that generates and publishes random temperature readings
-2. A server that receives the temperature data and forwards it to n8n for Google Sheets integration
+- Temperature simulator (`simulator.js`) - Generates random temperature data
+- MQTT broker (test.mosquitto.org) (for test only!!!) - Handles message routing
+- Server (`server.js`) - Processes temperature data and forwards to n8n
+- n8n workflow - Handles temperature threshold checks and Telegram notifications
 
 ## Prerequisites
 
-- Node.js (v16.0.0 or higher)
-- n8n instance running locally or hosted
-- Google account for Google Sheets integration
+- Node.js 16.0.0 or higher
+- n8n instance running on port 5678
+- Telegram bot token and chat ID
+- MQTT broker access (using test.mosquitto.org)
 
 ## Installation
 
-1. Clone the repository
+1. Clone the repository:
+
+```bash
+git clone [your-repo-url]
+cd [your-repo-name]
+```
+
 2. Install dependencies:
 
 ```bash
 npm install
 ```
 
-## Configuration
-
-### MQTT Settings
-
-Both the simulator and server use these MQTT settings:
-
-- Broker: test.mosquitto.org
-- Topic: corgidev/room/temperature (The topic name should be changed to unique because Broker: test.mosquitto.org is public and used for testing only.)
-- Protocol: mqtt (unencrypted)
-
-### Webhook Configuration
-
-The server forwards data to an n8n webhook. Update the webhook URL in `server.js`:
-
-```javascript
-const webhookUrl = "your-webhook-url";
-```
+3. Configure n8n:
+   - Import the workflow
+   - Set up Telegram node with your bot credentials
+   - Update webhook URL in `server.js` if needed
 
 ## Usage
 
@@ -50,44 +46,31 @@ const webhookUrl = "your-webhook-url";
 node simulator.js
 ```
 
-2. Start the server in a separate terminal:
+2. Start the server:
 
 ```bash
 node server.js
 ```
 
-## n8n Workflow Setup
+## How It Works
 
-1. Create a new workflow in n8n
-2. Add a Webhook node:
+1. `simulator.js` generates random temperature readings between -20°C and -8°C
+2. Data is published to MQTT topic: `corgidev/room/temperature`
+3. `server.js` subscribes to the topic and forwards data to n8n webhook
+4. n8n workflow:
+   - Checks if temperature > -12°C
+   - Sends Telegram alert if temperature is unsafe
+   - Safe temperature range: -20°C to -12°C
 
-   - Method: POST
-   - Path: your-webhook-url
-   - Response: JSON
+## Alert Conditions
 
-3. Add a Google Sheets node:
-
-   - Operation: Append
-   - Sheet ID: Your Google Sheet ID
-   - Range: Sheet name and range (e.g., 'Sheet1!A:C')
-   - Fields to map:
-     - Temperature
-     - Timestamp
-
-4. Connect the nodes and activate the workflow
-
-## Data Format
-
-The temperature data is sent in JSON format:
-
-```json
-{
-  "temperature": 28.45,
-  "timestamp": "10:30:15 AM",
-  "unit": "celsius"
-}
-```
+- Temperature > -12°C: ALERT (unsafe for ice cream storage)
+- Temperature ≤ -12°C: OK (safe zone)
 
 ## License
 
-MIT
+MIT License - see [LICENSE](LICENSE) file for details
+
+## Author
+
+warathepj
