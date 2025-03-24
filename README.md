@@ -23,8 +23,8 @@ This system consists of:
 1. Clone the repository:
 
 ```bash
-git clone [your-repo-url]
-cd [your-repo-name]
+git clone https://github.com/warathepj/n8n-icecream.git
+cd n8n-icecream
 ```
 
 2. Install dependencies:
@@ -55,7 +55,7 @@ node server.js
 ## How It Works
 
 1. `simulator.js` generates random temperature readings between -20°C and -8°C
-2. Data is published to MQTT topic: `corgidev/room/temperature`
+2. Data is published to MQTT topic: `corgidev/room/temperature` (Must change to unique topic)
 3. `server.js` subscribes to the topic and forwards data to n8n webhook
 4. n8n workflow:
    - Checks if temperature > -12°C
