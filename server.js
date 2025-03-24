@@ -1,9 +1,12 @@
 // Import the MQTT client
 const mqtt = require('mqtt');
+const https = require('https');
+const http = require('http');
 
 // MQTT connection settings - using the same broker and topic as the simulator
 const brokerUrl = 'mqtt://test.mosquitto.org';
 const topic = 'corgidev/room/temperature';
+const webhookUrl = 'your-webhook-url';
 
 // Connect to the MQTT broker
 const client = mqtt.connect(brokerUrl);
@@ -35,8 +38,26 @@ client.on('message', (topic, message) => {
         console.log(`Unit: ${data.unit}`);
         console.log('-------------------');
         
-        // Here you can add code to process or store the data
-        // For example, save to a database, trigger alerts, etc.
+        // Forward to webhook
+        const postData = JSON.stringify(data);
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': Buffer.byteLength(postData)
+            }
+        };
+
+        const req = http.request(webhookUrl, options, (res) => {
+            console.log(`Webhook response status: ${res.statusCode}`);
+        });
+
+        req.on('error', (error) => {
+            console.error('Error forwarding to webhook:', error);
+        });
+
+        req.write(postData);
+        req.end();
         
     } catch (error) {
         console.error('Error processing message:', error);
